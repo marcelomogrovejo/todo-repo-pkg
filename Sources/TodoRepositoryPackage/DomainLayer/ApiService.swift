@@ -26,6 +26,7 @@ public struct ApiService {
 }
 
 extension ApiService: ApiServiceProtocol {
+
     public func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         localRepository.get(id: id) { result in
             switch result {

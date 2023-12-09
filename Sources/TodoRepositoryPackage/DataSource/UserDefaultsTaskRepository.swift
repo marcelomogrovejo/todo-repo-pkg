@@ -23,11 +23,28 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     }
     
     func list(completion: @escaping (Result<[TodoTaskDto], RepositoryError>) -> Void) {
-//        guard let todoTasks = UserDefaults.standard.object(forKey: "todo-tasks") as? [TodoTaskDto] else {
-//            return completion(.failure(.notFound))
-//        }
-        
+        var todos: [TodoTaskDto] = []
+        for (key, value) in UserDefaults.standard.dictionaryRepresentation() {
+            #if DEBUG
+            print("\(key): \(value)")
+            #endif
+            if key.contains("todo-task-") {
+                let data = UserDefaults.standard.data(forKey: key)
+                guard let data = data else {
+                    return completion(.failure(.notFound))
+                }
+                do {
+                    let dataDocoded = try JSONDecoder().decode(TodoTaskDto.self, from: data)
+                    todos.append(dataDocoded)
+                } catch {
+                    print("Unable to Decode object (\(error))")
+                    completion(.failure(.notFound))
+                }
+            }
+        }
+
         // //// Mock temporary list
+        /*
         var todos: [TodoTaskDto] = []
         let todo1 = TodoTaskDto(id: UUID().uuidString, avatar: "", username: "hsimpson", title: "Do groceries", description: "Go to the supermarket and buy whatever Marge request", date: "3/11/2023 10:10:00", isComplete: false)
         todos.append(todo1)
@@ -41,22 +58,23 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         todos.append(todo5)
         let todo6 = TodoTaskDto(id: UUID().uuidString, avatar: "", username: "hsimpson", title: "Watch TV", description: "Sit on the couch as always and turn on the TV", date: "19/12/2023 20:00:00", isComplete: false)
         todos.append(todo6)
+         */
         // //////////////
         
         completion(.success(todos))
     }
     
     func add(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
-        let newTask = TodoTaskDto(id: UUID().uuidString,
-                                  avatar: item.avatar,
-                                  username: item.username,
-                                  title: item.title,
-                                  description: item.description,
-                                  date: item.date,
-                                  isComplete: false)
-        let key = "todo-task-\(newTask.id)"
-        UserDefaults.standard.set(newTask, forKey: key)
-        completion(.success(newTask))
+        // UserDefauls just accept things like NSArray, NSDictionary, NSString, NSData, NSNumber, and NSDate NOT custome objects
+        do {
+            let data = try JSONEncoder().encode(item)
+            let key = "todo-task-\(item.id)"
+            UserDefaults.standard.set(data, forKey: key)
+            completion(.success(item))
+        } catch {
+            print("Unable to Encode object (\(error))")
+            completion(.failure(.notFound))
+        }
     }
     
     func edit(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
