@@ -10,7 +10,9 @@ import Foundation
 public protocol ApiServiceProtocol {
     func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
     func getAll(completion: @escaping (Result<[DomainTodoTask], RepositoryError>) -> Void)
+    func getAllAsync() async throws -> [DomainTodoTask]
     func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+    func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
     func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
     func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
 }
@@ -26,6 +28,7 @@ public struct ApiService {
 }
 
 extension ApiService: ApiServiceProtocol {
+
     public func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         localRepository.get(id: id) { result in
             switch result {
@@ -46,7 +49,7 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
-    
+
     public func getAll(completion: @escaping (Result<[DomainTodoTask], RepositoryError>) -> Void) {
         localRepository.list { result in
             switch result {
@@ -65,6 +68,33 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
+
+    public func getAllAsync() async throws -> [DomainTodoTask] {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[DomainTodoTask], Error>) in
+            getAll() { result in
+                switch result {
+                case .success(let success):
+                    continuation.resume(returning: success)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+//    func downloadImageAndMetadata(imageNumber: Int) async throws -> DetailedImage {
+//        return try await withCheckedThrowingContinuation({
+//            (continuation: CheckedContinuation<DetailedImage, Error>) in
+//            downloadImageAndMetadata(imageNumber: imageNumber) { image, error in
+//                if let image = image {
+//                    continuation.resume(returning: image)
+//                } else {
+//                    continuation.resume(throwing: error!)
+//                }
+//            }
+//        })
+//    }
+
+    
     
     public func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: UUID().uuidString,
@@ -90,7 +120,19 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
-    
+    public func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DomainTodoTask, Error>) in
+            new(item) { result in
+                switch result {
+                case .success(let domainTodoTask):
+                    continuation.resume(returning: domainTodoTask)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     public func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: item.id,
                                       avatar: item.avatar,
@@ -108,7 +150,7 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
-    
+
     public func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: item.id,
                                       avatar: item.avatar,
@@ -117,7 +159,7 @@ extension ApiService: ApiServiceProtocol {
                                       description: item.description,
                                       date: item.date,
                                       isComplete: item.isCompleted)
-        localRepository.edit(todoTaskDto) { result in
+        localRepository.delete(todoTaskDto) { result in
             switch result {
             case .success(let isDeleted):
                 completion(.success(isDeleted))
