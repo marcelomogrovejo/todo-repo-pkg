@@ -13,7 +13,7 @@ struct TodoTaskDto: Codable {
     var username: String
     var title: String
     var description: String
-    var date: String
+    var date: Date
     var isComplete: Bool
 
     /*

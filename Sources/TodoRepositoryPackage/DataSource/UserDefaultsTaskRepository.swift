@@ -26,7 +26,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         var todos: [TodoTaskDto] = []
         for (key, value) in UserDefaults.standard.dictionaryRepresentation() {
             #if DEBUG
-            print("\(key): \(value)")
+//            print("\(key): \(value)")
             #endif
             if key.contains("todo-task-") {
                 let data = UserDefaults.standard.data(forKey: key)
