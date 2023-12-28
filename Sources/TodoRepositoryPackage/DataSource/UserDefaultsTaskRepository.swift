@@ -11,11 +11,12 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
 
     typealias T = TodoTaskDto
 
+    let keyPrefix = "todo-task-"
     public init() {}
 
     func get(id: String, completion: @escaping (Result<TodoTaskDto?, RepositoryError>) -> Void) {
         
-        let key = "todo-task-\(id)"
+        let key = "\(keyPrefix)\(id)"
         guard let todoTask = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
             return completion(.failure(.notFound))
         }
@@ -28,7 +29,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
             #if DEBUG
 //            print("\(key): \(value)")
             #endif
-            if key.contains("todo-task-") {
+            if key.contains(keyPrefix) {
                 let data = UserDefaults.standard.data(forKey: key)
                 guard let data = data else {
                     return completion(.failure(.notFound))
@@ -68,7 +69,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         // UserDefauls just accept things like NSArray, NSDictionary, NSString, NSData, NSNumber, and NSDate NOT custome objects
         do {
             let data = try JSONEncoder().encode(item)
-            let key = "todo-task-\(item.id)"
+            let key = "\(keyPrefix)\(item.id)"
             UserDefaults.standard.set(data, forKey: key)
             completion(.success(item))
         } catch {
@@ -78,7 +79,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     }
     
     func edit(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
-        let key = "todo-task-\(item.id)"
+        let key = "\(keyPrefix)\(item.id)"
         guard var todoTaskToBeUpdated = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
             return completion(.failure(.notFound))
         }
@@ -91,7 +92,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     }
     
     func delete(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
-        let key = "todo-task-\(item.id)"
+        let key = "\(keyPrefix)\(item.id)"
         UserDefaults.standard.removeObject(forKey: key)
         completion(.success(true))
     }
