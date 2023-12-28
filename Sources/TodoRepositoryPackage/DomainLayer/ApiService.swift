@@ -9,6 +9,7 @@ import Foundation
 
 public protocol ApiServiceProtocol {
     func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+    func getOneAsync(id: String) async throws -> DomainTodoTask
     func getAll(completion: @escaping (Result<[DomainTodoTask], RepositoryError>) -> Void)
     func getAllAsync() async throws -> [DomainTodoTask]
     func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
@@ -47,6 +48,19 @@ extension ApiService: ApiServiceProtocol {
                 completion(.success(domainTodoTask))
             case .failure(let repositoryError):
                 completion(.failure(repositoryError))
+            }
+        }
+    }
+
+    public func getOneAsync(id: String) async throws -> DomainTodoTask {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DomainTodoTask, Error>) in
+            getOne(id: id) { result in
+                switch result {
+                case .success(let domainTodoTask):
+                    continuation.resume(returning: domainTodoTask)
+                case .failure(let repositoryError):
+                    continuation.resume(throwing: repositoryError)
+                }
             }
         }
     }
