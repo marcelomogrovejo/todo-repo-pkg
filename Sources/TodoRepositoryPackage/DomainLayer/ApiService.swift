@@ -15,6 +15,7 @@ public protocol ApiServiceProtocol {
     func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
     func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
     func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
+    func deleteAsync(_ item: DomainTodoTask) async throws -> Bool
 }
 
 public struct ApiService {
@@ -165,6 +166,19 @@ extension ApiService: ApiServiceProtocol {
                 completion(.success(isDeleted))
             case .failure(let repositoryError):
                 completion(.failure(repositoryError))
+            }
+        }
+    }
+
+    public func deleteAsync(_ item: DomainTodoTask) async throws -> Bool {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+            delete(item) { result in
+                switch result {
+                case .success(let success):
+                    continuation.resume(returning: success)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }
