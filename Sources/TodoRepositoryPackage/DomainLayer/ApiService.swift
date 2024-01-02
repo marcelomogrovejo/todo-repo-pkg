@@ -156,7 +156,7 @@ extension ApiService: ApiServiceProtocol {
                                       description: item.description,
                                       date: item.date,
                                       isComplete: item.isCompleted)
-        localRepository.edit(todoTaskDto) { result in
+        localRepository.update(todoTaskDto) { result in
             switch result {
             case .success(let isUpdated):
                 completion(.success(isUpdated))
