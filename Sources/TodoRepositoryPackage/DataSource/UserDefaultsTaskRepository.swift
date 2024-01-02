@@ -16,12 +16,16 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
 
     func get(id: String, completion: @escaping (Result<TodoTaskDto?, RepositoryError>) -> Void) {
         let key = "\(keyPrefix)\(id)"
-        let data = UserDefaults.standard.object(forKey: key) as? Data
-        do {
-            let item = try JSONDecoder().decode(TodoTaskDto.self, from: data!)
-            completion(.success(item))
-        } catch {
-            print("Unable to Decode object (\(error))")
+        if let data = UserDefaults.standard.object(forKey: key) as? Data {
+            do {
+                let item = try JSONDecoder().decode(TodoTaskDto.self, from: data)
+                completion(.success(item))
+            } catch {
+                print("Error: Unable to Decode object (\(error))")
+                completion(.failure(.notFound))
+            }
+        } else {
+            print("Error: Object not found.")
             completion(.failure(.notFound))
         }
     }
@@ -41,7 +45,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
                     let dataDocoded = try JSONDecoder().decode(TodoTaskDto.self, from: data)
                     todos.append(dataDocoded)
                 } catch {
-                    print("Unable to Decode object (\(error))")
+                    print("Error: Unable to Decode object (\(error))")
                     completion(.failure(.notFound))
                 }
             }
@@ -76,12 +80,46 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
             UserDefaults.standard.set(data, forKey: key)
             completion(.success(item))
         } catch {
-            print("Unable to Encode object (\(error))")
+            print("Error: Unable to Encode object (\(error))")
             completion(.failure(.notFound))
         }
     }
-    
-    func update(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
+
+    func update(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
+        // 1. get one
+        get(id: item.id) { result in
+            switch result {
+            case .success(let todoTaskDto):
+                guard var todoTaskToBeUpdated = todoTaskDto else {
+                    completion(.failure(.notFound))
+                    return
+                }
+                //         2. print or debug
+                print(todoTaskToBeUpdated)
+                // 3. change
+                todoTaskToBeUpdated.avatar = item.avatar
+                todoTaskToBeUpdated.title = item.title
+                todoTaskToBeUpdated.description = item.description
+                todoTaskToBeUpdated.isComplete = item.isComplete
+                todoTaskToBeUpdated.date = item.date
+                todoTaskToBeUpdated.username = item.username
+                // 4. save
+                do {
+                    let data = try JSONEncoder().encode(todoTaskToBeUpdated)
+                    let key = "\(self.keyPrefix)\(todoTaskToBeUpdated.id)"
+                    UserDefaults.standard.set(data, forKey: key)
+                    // 5. return saved item
+                    completion(.success(todoTaskToBeUpdated))
+                } catch {
+                    print("Error: Unable to Encode object (\(error))")
+                    completion(.failure(.notFound))
+                }
+            case .failure(let repositoryError):
+                completion(.failure(repositoryError))
+            }
+        }
+
+        /*
         let key = "\(keyPrefix)\(item.id)"
         guard var todoTaskToBeUpdated = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
             return completion(.failure(.notFound))
@@ -92,6 +130,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         todoTaskToBeUpdated.isComplete = item.isComplete
         UserDefaults.standard.set(todoTaskToBeUpdated, forKey: key)
         completion(.success(true))
+         */
     }
     
     func delete(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
