@@ -17,10 +17,18 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     func get(id: String, completion: @escaping (Result<TodoTaskDto?, RepositoryError>) -> Void) {
         
         let key = "\(keyPrefix)\(id)"
-        guard let todoTask = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
-            return completion(.failure(.notFound))
+        let data = UserDefaults.standard.object(forKey: key) as? Data
+        do {
+            let item = try JSONDecoder().decode(TodoTaskDto.self, from: data!)
+            completion(.success(item))
+        } catch {
+            print("Unable to Decode object (\(error))")
+            completion(.failure(.notFound))
         }
-        completion(.success(todoTask))
+//        guard let todoTask = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
+//            return completion(.failure(.notFound))
+//        }
+//        completion(.success(todoTask))
     }
     
     func list(completion: @escaping (Result<[TodoTaskDto], RepositoryError>) -> Void) {
