@@ -14,8 +14,8 @@ public protocol ApiServiceProtocol {
     func getAllAsync() async throws -> [DomainTodoTask]
     func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
     func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
-    func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
-    func updateAsync(_ item: DomainTodoTask) async throws -> Bool
+    func update(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+    func updateAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
     func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
     func deleteAsync(_ item: DomainTodoTask) async throws -> Bool
 }
@@ -97,21 +97,24 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
-//    func downloadImageAndMetadata(imageNumber: Int) async throws -> DetailedImage {
-//        return try await withCheckedThrowingContinuation({
-//            (continuation: CheckedContinuation<DetailedImage, Error>) in
-//            downloadImageAndMetadata(imageNumber: imageNumber) { image, error in
-//                if let image = image {
-//                    continuation.resume(returning: image)
-//                } else {
-//                    continuation.resume(throwing: error!)
-//                }
-//            }
-//        })
-//    }
 
-    
-    
+    // TODO: Warning ! implement
+    /*
+    func downloadImageAndMetadata(imageNumber: Int) async throws -> DetailedImage {
+        return try await withCheckedThrowingContinuation({
+            (continuation: CheckedContinuation<DetailedImage, Error>) in
+            downloadImageAndMetadata(imageNumber: imageNumber) { image, error in
+                if let image = image {
+                    continuation.resume(returning: image)
+                } else {
+                    continuation.resume(throwing: error!)
+                }
+            }
+        })
+    }
+     */
+
+
     public func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: UUID().uuidString,
                                       avatar: item.avatar,
@@ -149,7 +152,7 @@ extension ApiService: ApiServiceProtocol {
         }
     }
 
-    public func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
+    public func update(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: item.id,
                                       avatar: item.avatar,
                                       username: item.username,
@@ -159,20 +162,27 @@ extension ApiService: ApiServiceProtocol {
                                       isComplete: item.isCompleted)
         localRepository.update(todoTaskDto) { result in
             switch result {
-            case .success(let isUpdated):
-                completion(.success(isUpdated))
+            case .success(let updatedTodoTaskDto):
+                let domainTodoTask = DomainTodoTask(id: updatedTodoTaskDto.id,
+                                                    avatar: updatedTodoTaskDto.avatar,
+                                                    username: updatedTodoTaskDto.username,
+                                                    title: updatedTodoTaskDto.title,
+                                                    date: updatedTodoTaskDto.date,
+                                                    description: updatedTodoTaskDto.description,
+                                                    isCompleted: updatedTodoTaskDto.isComplete)
+                completion(.success(domainTodoTask))
             case .failure(let repositoryError):
                 completion(.failure(repositoryError))
             }
         }
     }
 
-    public func updateAsync(_ item: DomainTodoTask) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+    public func updateAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DomainTodoTask, Error>) in
             update(item) { result in
                 switch result {
-                case .success(let success):
-                    continuation.resume(returning: success)
+                case .success(let domainTodoTask):
+                    continuation.resume(returning: domainTodoTask)
                 case .failure(let error):
                     continuation.resume(throwing: error)
                 }

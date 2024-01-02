@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "36FD3337-344B-43C4-8F4E-7D01AFDD2926",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "TodoRepositoryPackageTests"
+      ],
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "TodoRepositoryPackageTests",
+        "name" : "TodoRepositoryPackageTests"
+      }
+    }
+  ],
+  "version" : 1
+}
