@@ -15,7 +15,7 @@ protocol RepositoryProtocol {
     func get(id: String, completion: @escaping (Result<T?, RepositoryError>) -> Void)
     func list(completion: @escaping (Result<[T], RepositoryError>) -> Void)
     func add(_ item: T, completion: @escaping (Result<T, RepositoryError>) -> Void)
-    func edit(_ item: T, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
+    func update(_ item: T, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
     func delete(_ item: T, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
 }
 

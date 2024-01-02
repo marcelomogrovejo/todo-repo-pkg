@@ -15,7 +15,6 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     public init() {}
 
     func get(id: String, completion: @escaping (Result<TodoTaskDto?, RepositoryError>) -> Void) {
-        
         let key = "\(keyPrefix)\(id)"
         let data = UserDefaults.standard.object(forKey: key) as? Data
         do {
@@ -25,12 +24,8 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
             print("Unable to Decode object (\(error))")
             completion(.failure(.notFound))
         }
-//        guard let todoTask = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
-//            return completion(.failure(.notFound))
-//        }
-//        completion(.success(todoTask))
     }
-    
+
     func list(completion: @escaping (Result<[TodoTaskDto], RepositoryError>) -> Void) {
         var todos: [TodoTaskDto] = []
         for (key, value) in UserDefaults.standard.dictionaryRepresentation() {
@@ -86,7 +81,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         }
     }
     
-    func edit(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
+    func update(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
         let key = "\(keyPrefix)\(item.id)"
         guard var todoTaskToBeUpdated = UserDefaults.standard.object(forKey: key) as? TodoTaskDto else {
             return completion(.failure(.notFound))

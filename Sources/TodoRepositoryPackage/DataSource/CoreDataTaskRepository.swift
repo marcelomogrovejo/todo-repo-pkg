@@ -26,7 +26,7 @@ class CoreDataTaskRepository: RepositoryProtocol {
         completion(.failure(.notFound))
     }
     
-    func edit(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
+    func update(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
         // TODO: implement
         completion(.failure(.notFound))
     }
