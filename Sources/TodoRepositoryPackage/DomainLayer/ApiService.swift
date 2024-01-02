@@ -15,6 +15,7 @@ public protocol ApiServiceProtocol {
     func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
     func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
     func update(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
+    func updateAsync(_ item: DomainTodoTask) async throws -> Bool
     func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
     func deleteAsync(_ item: DomainTodoTask) async throws -> Bool
 }
@@ -162,6 +163,19 @@ extension ApiService: ApiServiceProtocol {
                 completion(.success(isUpdated))
             case .failure(let repositoryError):
                 completion(.failure(repositoryError))
+            }
+        }
+    }
+
+    public func updateAsync(_ item: DomainTodoTask) async throws -> Bool {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+            update(item) { result in
+                switch result {
+                case .success(let success):
+                    continuation.resume(returning: success)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }
