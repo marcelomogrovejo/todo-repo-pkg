@@ -17,6 +17,7 @@ class LocalRepositoryMock: RepositoryProtocol {
     var addSuccess = true
     var updateSuccess = true
     var deleteSuccess = true
+    var completeSuccess = true
 
     func get(id: String, completion: @escaping (Result<TodoTaskDto?, RepositoryError>) -> Void) {
         if getOneSuccess {
@@ -69,6 +70,21 @@ class LocalRepositoryMock: RepositoryProtocol {
     func delete(_ item: TodoTaskDto, completion: @escaping (Result<Bool, RepositoryError>) -> Void) {
         if deleteSuccess {
             completion(.success(true))
+        } else {
+            completion(.failure(.notFound))
+        }
+    }
+
+    func complete(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
+        if completeSuccess {
+            let updatedItem = TodoTaskDto(id: item.id,
+                                          avatar: item.avatar,
+                                          username: item.username,
+                                          title: item.title,
+                                          description: item.description,
+                                          date: item.date,
+                                          isComplete: false)
+            completion(.success(updatedItem))
         } else {
             completion(.failure(.notFound))
         }

@@ -32,7 +32,7 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
 
     func list(completion: @escaping (Result<[TodoTaskDto], RepositoryError>) -> Void) {
         var todos: [TodoTaskDto] = []
-        for (key, value) in UserDefaults.standard.dictionaryRepresentation() {
+        for (key, _) in UserDefaults.standard.dictionaryRepresentation() {
             #if DEBUG
 //            print("\(key): \(value)")
             #endif
@@ -86,7 +86,6 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
     }
 
     func update(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
-        // 1. get one
         get(id: item.id) { result in
             switch result {
             case .success(let todoTaskDto):
@@ -94,21 +93,16 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
                     completion(.failure(.notFound))
                     return
                 }
-                //         2. print or debug
-                print(todoTaskToBeUpdated)
-                // 3. change
                 todoTaskToBeUpdated.avatar = item.avatar
                 todoTaskToBeUpdated.title = item.title
                 todoTaskToBeUpdated.description = item.description
                 todoTaskToBeUpdated.isComplete = item.isComplete
                 todoTaskToBeUpdated.date = item.date
                 todoTaskToBeUpdated.username = item.username
-                // 4. save
                 do {
                     let data = try JSONEncoder().encode(todoTaskToBeUpdated)
                     let key = "\(self.keyPrefix)\(todoTaskToBeUpdated.id)"
                     UserDefaults.standard.set(data, forKey: key)
-                    // 5. return saved item
                     completion(.success(todoTaskToBeUpdated))
                 } catch {
                     print("Error: Unable to Encode object (\(error))")
@@ -137,6 +131,24 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         let key = "\(keyPrefix)\(item.id)"
         UserDefaults.standard.removeObject(forKey: key)
         completion(.success(true))
+    }
+
+    func complete(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
+        let itemToUpdate = TodoTaskDto(id: item.id,
+                                       avatar: item.avatar,
+                                       username: item.username,
+                                       title: item.title,
+                                       description: item.description,
+                                       date: item.date,
+                                       isComplete: false)
+        update(itemToUpdate) { result in
+            switch result {
+            case .success(let updatedTodoTaskDto):
+                completion(.success(updatedTodoTaskDto))
+            case .failure(let repositoryError):
+                completion(.failure(repositoryError))
+            }
+        }
     }
 
 }

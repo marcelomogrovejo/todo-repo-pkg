@@ -17,6 +17,7 @@ protocol RepositoryProtocol {
     func add(_ item: T, completion: @escaping (Result<T, RepositoryError>) -> Void)
     func update(_ item: T, completion: @escaping (Result<T, RepositoryError>) -> Void)
     func delete(_ item: T, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
+    func complete(_ item: T, completion: @escaping (Result<T, RepositoryError>) -> Void)
 }
 
 protocol CombineRepositoryProtocol {
