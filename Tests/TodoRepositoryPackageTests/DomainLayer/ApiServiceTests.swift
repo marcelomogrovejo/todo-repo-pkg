@@ -250,4 +250,58 @@ final class ApiServiceTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 2.0)
     }
+
+    func testComplete_onSuccess() {
+        // Arrange
+        let expectation = XCTestExpectation(description: "Expectation description")
+
+        let itemToUpdate = TodoTaskDto(id: UUID().uuidString,
+                                       avatar: "",
+                                       username: "TestUsername",
+                                       title: "Test new title",
+                                       description: "Test new description",
+                                       date: Date(),
+                                       isComplete: true)
+        // Act
+        localRespo?.complete(itemToUpdate) { result in
+            // Assert
+            switch result {
+            case .success(let updatedItem):
+                XCTAssertNotNil(updatedItem, "Updated item has been got")
+                XCTAssertFalse(updatedItem.isComplete, "Item has been updated")
+            case .failure(_ ):
+                break
+            }
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
+
+    }
+
+    func testComplete_onFailure() {
+        // Arrange
+        let expectation = XCTestExpectation(description: "Expectation description")
+        localRespo?.deleteSuccess = false
+
+        let itemToUpdate = TodoTaskDto(id: UUID().uuidString,
+                                       avatar: "",
+                                       username: "TestUsername",
+                                       title: "Test new title",
+                                       description: "Test new description",
+                                       date: Date(),
+                                       isComplete: true)
+        // Act
+        localRespo?.complete(itemToUpdate) { result in
+            // Assert
+            switch result {
+            case .success(_ ):
+                break
+            case .failure(let repoError):
+                XCTAssertNotNil(repoError, "Error updating item \(repoError.localizedDescription)")
+            }
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
+
+    }
 }
