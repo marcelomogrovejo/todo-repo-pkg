@@ -133,22 +133,22 @@ public class UserDefaultsTaskRepository: RepositoryProtocol {
         completion(.success(true))
     }
 
-    func complete(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
-        let itemToUpdate = TodoTaskDto(id: item.id,
-                                       avatar: item.avatar,
-                                       username: item.username,
-                                       title: item.title,
-                                       description: item.description,
-                                       date: item.date,
-                                       isComplete: false)
-        update(itemToUpdate) { result in
-            switch result {
-            case .success(let updatedTodoTaskDto):
-                completion(.success(updatedTodoTaskDto))
-            case .failure(let repositoryError):
-                completion(.failure(repositoryError))
-            }
-        }
-    }
+//    func complete(_ item: TodoTaskDto, completion: @escaping (Result<TodoTaskDto, RepositoryError>) -> Void) {
+//        let itemToUpdate = TodoTaskDto(id: item.id,
+//                                       avatar: item.avatar,
+//                                       username: item.username,
+//                                       title: item.title,
+//                                       description: item.description,
+//                                       date: item.date,
+//                                       isComplete: false)
+//        update(itemToUpdate) { result in
+//            switch result {
+//            case .success(let updatedTodoTaskDto):
+//                completion(.success(updatedTodoTaskDto))
+//            case .failure(let repositoryError):
+//                completion(.failure(repositoryError))
+//            }
+//        }
+//    }
 
 }
