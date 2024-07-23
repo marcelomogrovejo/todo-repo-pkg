@@ -224,23 +224,38 @@ extension ApiService: ApiServiceProtocol {
     }
 
     public func completeTask(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
-        let todoTaskDto = TodoTaskDto(id: item.id,
-                                      avatar: item.avatar,
-                                      username: item.username,
-                                      title: item.title,
-                                      description: item.description,
-                                      date: item.date,
-                                      isComplete: item.isCompleted)
-        localRepository.complete(todoTaskDto) { result in
+//        let todoTaskDto = TodoTaskDto(id: item.id,
+//                                      avatar: item.avatar,
+//                                      username: item.username,
+//                                      title: item.title,
+//                                      description: item.description,
+//                                      date: item.date,
+//                                      isComplete: item.isCompleted)
+//        localRepository.complete(todoTaskDto) { result in
+//            switch result {
+//            case .success(let updatedTodoTaskDto):
+//                let domainTodoTask = DomainTodoTask(id: updatedTodoTaskDto.id,
+//                                                    avatar: updatedTodoTaskDto.avatar,
+//                                                    username: updatedTodoTaskDto.username,
+//                                                    title: updatedTodoTaskDto.title,
+//                                                    date: updatedTodoTaskDto.date,
+//                                                    description: updatedTodoTaskDto.description,
+//                                                    isCompleted: updatedTodoTaskDto.isComplete)
+//                completion(.success(domainTodoTask))
+//            case .failure(let repositoryError):
+//                completion(.failure(repositoryError))
+//            }
+//        }
+        let completedItem = DomainTodoTask(id: item.id,
+                                           avatar: item.avatar,
+                                           username: item.username,
+                                           title: item.title,
+                                           date: item.date,
+                                           description: item.description,
+                                           isCompleted: true)
+        update(completedItem) { result in
             switch result {
-            case .success(let updatedTodoTaskDto):
-                let domainTodoTask = DomainTodoTask(id: updatedTodoTaskDto.id,
-                                                    avatar: updatedTodoTaskDto.avatar,
-                                                    username: updatedTodoTaskDto.username,
-                                                    title: updatedTodoTaskDto.title,
-                                                    date: updatedTodoTaskDto.date,
-                                                    description: updatedTodoTaskDto.description,
-                                                    isCompleted: updatedTodoTaskDto.isComplete)
+            case .success(let domainTodoTask):
                 completion(.success(domainTodoTask))
             case .failure(let repositoryError):
                 completion(.failure(repositoryError))
@@ -255,7 +270,8 @@ extension ApiService: ApiServiceProtocol {
                                                title: item.title,
                                                date: item.date,
                                                description: item.description,
-                                               isCompleted: item.isCompleted)
+                                               isCompleted: true)
+        // TODO: Why not calling updateAsync() ?
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DomainTodoTask, Error>) in
             update(updatedDomainItem) { result in
                 switch result {
