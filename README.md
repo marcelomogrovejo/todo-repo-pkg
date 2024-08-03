@@ -1,13 +1,11 @@
 # Table of Contents
 1. [Description](#description)
 2. [Getting started](#getting-started)
-3. [Usage](#usage)
-4. [Arhitecture](#arhitecture)
-5. [Structure](#structure)
-6. [Running the tests](#running-the-tests)
-7. [Deployment](#deployment)
-8. [Dependencies](#dependencies)
-9. [Workflow](#workflow)
+3. [Structure](#structure)
+4. [Running the tests](#running-the-tests)
+5. [Deployment](#deployment)
+6. [Dependencies](#dependencies)
+7. [Workflow](#workflow)
 
 # ToDo Repository Package
 
@@ -35,21 +33,6 @@ The project consists of an API Service which exposes methods to fetch, create, d
 
 You should see a lottie animation on the screen.<br>
 You should see a main button that takes you to an empty list of tasks.<br>
-
-# Usage
-In order to start managing tasks, you should tap on the main button, which will take you to an empty task list.<br>
-There you can add new tasks by tapping the plus button "+" on the top right of the screen.<br>
-Once the new task is added you can see it on the list.<br>
-In order to edit an existing task you should swipe left the task item on the list and tap the "Edit" button.<br>
-In order to delete a task you should swipe left the task item on the list and tap the "Delete" button.<br>
-
-# Architecture
-* ToDoRepository package project is implemented using the <strong>Model-View-Presenter (MVP)</strong> architecture pattern.
-
-* Model has any necessary data structure needed to generate the task.
-* View is responsible for displaying the task form to be filled by the user.
-* Controller handles any user input or interactions and update the Model and View as needed.
-* Project doesn't have a local database.<br><br>
 
 # Structure 
 * "DataSource": Procotols, error handling and model files.
@@ -85,8 +68,8 @@ If you come across any issues while using the ToDoRepository package app, please
 ```
 App version: 1.02
 iOS version: 16.1
-Description: When I tap on the "Cancel" button, the add task screen doen's close.
-Steps to reproduce: On the add new task screen, by tapping the "Cancel" button on the top left of the screen, the screen doesn't close and navigate back to the list screen.
+Description: When the api receives a complete task request this is not performing any action and the task keeps active.
+Steps to reproduce: On the task list, tap the radio button on the right of the task information, the radio button is filled but the task is still active.
 ```
 
 * Submitting pull requests: <br> 
