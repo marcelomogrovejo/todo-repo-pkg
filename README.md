@@ -1,3 +1,7 @@
+[![Swift Version][swift-image]][swift-url]
+[![License][license-image]][license-url]
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
 # Table of Contents
 1. [Description](#description)
 2. [Getting started](#getting-started)

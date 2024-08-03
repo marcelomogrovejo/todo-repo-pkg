@@ -8,6 +8,11 @@
 import Foundation
 
 public protocol ApiServiceProtocol {
+    
+    /// <#Description#>
+    /// - Parameters:
+    ///   - id: <#id description#>
+    ///   - completion: <#completion description#>
     func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
     func getOneAsync(id: String) async throws -> DomainTodoTask
     func getAll(completion: @escaping (Result<[DomainTodoTask], RepositoryError>) -> Void)
@@ -34,6 +39,23 @@ public struct ApiService {
 
 extension ApiService: ApiServiceProtocol {
 
+    /// Fetch one task by its `id`.
+    ///
+    /// - Parameters:
+    ///   - id: the task unique identifier.
+    ///   - completion: the task itself or an error.
+    ///
+    /// ```
+    ///
+    /// ```
+    ///
+    /// > Note:
+    /// >
+    ///
+    /// *
+    /// *
+    ///
+    ///
     public func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         localRepository.get(id: id) { result in
             switch result {
