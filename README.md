@@ -1,3 +1,7 @@
+[![Swift Version][swift-image]][swift-url]
+[![License][license-image]][license-url]
+[![PRs Welcome][pr-welcome-image]][pr-welcome-url]
+
 # Table of Contents
 1. [Description](#description)
 2. [Getting started](#getting-started)
@@ -81,3 +85,24 @@ If you notice any errors or areas of improvement in the documentation, feel free
 
 * Providing feedback:<br> 
 If you have any feedback or suggestions for the ToDoRepository package project, please let us know by creating a new issue or by sending an email to the project maintainer.
+
+## Contribute
+
+We would love you for the contribution to **ToDoRepositoryPackage**, check the ``LICENSE`` file for more info.
+
+## Meta
+
+Marcel Mogrovejo – [Porfolio](https://marcelomogrovejo.gitlab.io/my-ios-portfolio/) – marcelo.mogrovejo@gmail.com
+
+Distributed under the MIT license. See ``LICENSE`` for more information.
+
+[https://github.com/marcelomogrovejo/todo-repo-pkg](https://github.com/marcelomogrovejo/todo-repo-pkg)
+
+[swift-image]:https://img.shields.io/badge/swift-5.0-orange.svg
+[swift-url]: https://swift.org/
+[license-image]: https://img.shields.io/badge/License-MIT-blue.svg
+[license-url]: LICENSE
+[codebeat-image]: https://codebeat.co/badges/c19b47ea-2f9d-45df-8458-b2d952fe9dad
+[codebeat-url]: https://codebeat.co/projects/github-com-vsouza-awesomeios-com
+[pr-welcome-image]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square
+[pr-welcome-url]: http://makeapullrequest.com
