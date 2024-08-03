@@ -9,4 +9,6 @@ import Foundation
 
 public enum RepositoryError: Error {
     case notFound
+    
+    // TODO: implement more accurate errors
 }

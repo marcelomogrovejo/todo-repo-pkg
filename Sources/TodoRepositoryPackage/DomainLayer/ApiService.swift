@@ -8,17 +8,147 @@
 import Foundation
 
 public protocol ApiServiceProtocol {
+
+    /// Fetch one task by its `id`.
+    ///
+    /// - Parameters:
+    ///   - id: The task unique identifier.
+    ///   - completion: A result with the task itself or an error.
     func getOne(id: String, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+
+    /// Fetch one task by its `id`.
+    ///
+    /// Implements continuation to call the ``getOne(id:completion:)`` method.
+    ///
+    /// - Parameter id: The task unique identifier.
+    /// - Returns: The task itself.
+    /// - throws: An error.
+    ///
+    ///  > Important: Async/Await version.
     func getOneAsync(id: String) async throws -> DomainTodoTask
+
+    /// Fetch all the tasks.
+    ///
+    /// - Parameter completion: A result with an array of tasks or an error.
     func getAll(completion: @escaping (Result<[DomainTodoTask], RepositoryError>) -> Void)
+
+    /// Fetch all the tasks.
+    ///
+    /// Implements continuation to call the ``getAll(completion:)`` method.
+    ///
+    /// - Returns: An array of tasks.
+    /// - throws: An error.
+    ///
+    /// > Important: Async/Await version.
     func getAllAsync() async throws -> [DomainTodoTask]
+
+    /// Create a new task.
+    ///
+    /// - Parameters:
+    ///   - item: The `task` which will be added.
+    ///   - completion: The result with the just added task or an error.
     func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+
+    /// Create a new task.
+    ///
+    /// Implements continuation to call the ``new(_:completion:)`` method.
+    ///
+    /// - Returns: The `task` just created.
+    /// - throws: An error.
+    ///
+    /// > Important: Async/Await version.
     func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
+
+    /// Update a task.
+    ///
+    /// - Parameters:
+    ///   - item: The `task` which will be updated.
+    ///   - completion: The result with the task just updated or an error.
     func update(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+
+    /// Update a task.
+    ///
+    /// Implements continuation to call the ``update(_:completion:)`` method.
+    ///
+    /// - Parameter item: The `task` which will be updated.
+    /// - Returns: The just updated task.
+    /// - throws: An error.
+    ///
+    /// > Important: Async/Await version.
     func updateAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
+
+    /// Remove a task.
+    ///
+    /// - Parameter item: The `task` which will be removed.
+    /// - Parameter completion The result with a boolean value or an error.
+    ///
+    /// > Waring: This method should return anything.
     func delete(_ item: DomainTodoTask, completion: @escaping (Result<Bool, RepositoryError>) -> Void)
+
+    /// Remove a task.
+    ///
+    /// Implements continuation to call the ``delete(_:completion:)`` method.
+    ///
+    /// - Parameter item: The `task` which will be removed.
+    /// - Returns: A boolean value.
+    /// - throws:: An error.
+    ///
+    /// > Waring: This method should return anything.
+    ///
+    /// > Important: Async/Await version.
     func deleteAsync(_ item: DomainTodoTask) async throws -> Bool
+
+    /// Complete a task.
+    ///
+    /// - Parameter item: The `task` which will be completed.
+    /// - Parameter completion The result with the completed task or an error.
+    ///
+    /// > Note: It calls ``update(_:completion:)`` method passing the `DomainTodoTask` with its `isCompleted` parameter as `true`.
+    /// ```swift
+    /// let completedItem = DomainTodoTask(id: item.id,
+    ///                                   avatar: item.avatar,
+    ///                                   username: item.username,
+    ///                                   title: item.title,
+    ///                                   date: item.date,
+    ///                                   description: item.description,
+    ///                                   isCompleted: true)
+    /// update(completedItem) { result in
+    ///    switch result {
+    ///    case .success(let domainTodoTask):
+    ///        completion(.success(domainTodoTask))
+    ///    case .failure(let repositoryError):
+    ///        completion(.failure(repositoryError))
+    ///    }
+    ///}
+    /// ```
     func completeTask(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void)
+
+    /// Complete a task.
+    ///
+    /// Implements continuation to call the ``completeTask(_:completion:)`` method.
+    ///
+    /// - Parameter item: The `task` which will be completed.
+    /// - throws An error.
+    ///
+    /// > Note: It calls ``update(_:completion:)`` method passing the `DomainTodoTask` with its `isCompleted` parameter as `true`.
+    /// ```swift
+    /// let completedItem = DomainTodoTask(id: item.id,
+    ///                                   avatar: item.avatar,
+    ///                                   username: item.username,
+    ///                                   title: item.title,
+    ///                                   date: item.date,
+    ///                                   description: item.description,
+    ///                                   isCompleted: true)
+    /// update(completedItem) { result in
+    ///    switch result {
+    ///    case .success(let domainTodoTask):
+    ///        completion(.success(domainTodoTask))
+    ///    case .failure(let repositoryError):
+    ///        completion(.failure(repositoryError))
+    ///    }
+    ///}
+    /// ```
+    /// > Important: Async/Await version.
     func completeTaskAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask
 }
 
@@ -116,7 +246,6 @@ extension ApiService: ApiServiceProtocol {
     }
      */
 
-
     public func new(_ item: DomainTodoTask, completion: @escaping (Result<DomainTodoTask, RepositoryError>) -> Void) {
         let todoTaskDto = TodoTaskDto(id: UUID().uuidString,
                                       avatar: item.avatar,
@@ -141,6 +270,7 @@ extension ApiService: ApiServiceProtocol {
             }
         }
     }
+
     public func newAsync(_ item: DomainTodoTask) async throws -> DomainTodoTask {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<DomainTodoTask, Error>) in
             new(item) { result in
