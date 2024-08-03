@@ -10,6 +10,8 @@
 5. [Deployment](#deployment)
 6. [Dependencies](#dependencies)
 7. [Workflow](#workflow)
+8. [Contribute](#Contribute)
+9. [Meta](#Meta)
 
 # ToDo Repository Package
 
